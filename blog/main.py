@@ -43,8 +43,31 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     except:
         raise HTTPException(status_code=500, detail=f'Something go wrong!')
 
+@app.put("/blog/{id}", status_code=202)
+def update(id: int, request: schemas.Blog, db: Session = Depends(get_db)):
+    print(request)
+    blog = db.query(models.Blog).filter(models.Blog.id == id)
+    if not blog.first():
+        raise HTTPException(status_code=404, detail=f'Blog with id {id} not found')
+
+    blog.update(request.dict(), synchronize_session=False)
+    db.commit()
+
+    return {
+        "success": True
+    }
+
+
 
 @app.delete("/blog/{id}", status_code=204)
 def delete(id: int, db: Session = Depends(get_db)):
-    db.query(models.Blog).filter(models.Blog.id == id).delete(synchronize_session=False)
+    blog = db.query(models.Blog).filter(models.Blog.id == id)
+    if not blog.first():
+        raise HTTPException(status_code=404, detail=f'Blog with id {id} not found')
+
+    blog.delete(synchronize_session=False)
     db.commit()
+
+    return {
+        "success": True
+    }
