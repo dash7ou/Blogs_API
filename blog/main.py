@@ -42,3 +42,9 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
         return new_blog
     except:
         raise HTTPException(status_code=500, detail=f'Something go wrong!')
+
+
+@app.delete("/blog/{id}", status_code=204)
+def delete(id: int, db: Session = Depends(get_db)):
+    db.query(models.Blog).filter(models.Blog.id == id).delete(synchronize_session=False)
+    db.commit()
