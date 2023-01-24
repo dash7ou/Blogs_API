@@ -47,7 +47,6 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
 
 @app.put("/blog/{id}", status_code=202)
 def update(id: int, request: schemas.Blog, db: Session = Depends(get_db)):
-    print(request)
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
         raise HTTPException(status_code=404, detail=f'Blog with id {id} not found')
@@ -75,11 +74,23 @@ def delete(id: int, db: Session = Depends(get_db)):
     }
 
 
-@app.post("/user")
+@app.post("/user", status_code=201, response_model=schemas.ShowUser)
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == request.email)
+    if user.first():
+        raise HTTPException(status_code=400, detail=f'User already exist')
+
     hashed_pass = Hash.bcrypt(request.password)
     new_user = models.User(name = request.name, password= hashed_pass, email = request.email)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user  
+    return new_user
+
+@app.get("/user/{id}", status_code=200, response_model=schemas.ShowUser)
+def get_user(id: int, db:Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id)
+    if not user.first():
+        raise HTTPException(status_code=404, detail=f'User with id {id} not avalible')
+
+    return user.first()
