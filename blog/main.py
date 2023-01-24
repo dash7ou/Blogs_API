@@ -3,7 +3,7 @@ from typing import List
 from . import schemas, models
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
+from .hashing import Hash
 
 app = FastAPI()
 
@@ -74,11 +74,10 @@ def delete(id: int, db: Session = Depends(get_db)):
         "success": True
     }
 
-pwd_cxt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @app.post("/user")
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
-    hashed_pass = pwd_cxt.hash(request.password)
+    hashed_pass = Hash.bcrypt(request.password)
     new_user = models.User(name = request.name, password= hashed_pass, email = request.email)
     db.add(new_user)
     db.commit()
