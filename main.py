@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from typing import Optional
-from pydantic import BaseModel
-import uvicorn
-
+from models import models
+from utils.database import engine
+from router import blog, user
 
 app = FastAPI()
 
+app.include_router(blog.router)
+app.include_router(user.router)
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=7000)
+models.Base.metadata.create_all(engine)
