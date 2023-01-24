@@ -37,12 +37,12 @@ def get_one(id: int, response: Response, db: Session = Depends(get_db)):
 @app.post("/blog", status_code=201, tags=["blogs"])
 def create(request: schemas.Blog, db: Session = Depends(get_db)):
     try:
-        new_blog = models.Blog(title= request.title, body=request.body)
+        new_blog = models.Blog(title= request.title, body=request.body, user_id=1)
         db.add(new_blog)
         db.commit()
         db.refresh(new_blog)
         return new_blog
-    except:
+    except Exception as e:
         raise HTTPException(status_code=500, detail=f'Something go wrong!')
 
 @app.put("/blog/{id}", status_code=202, tags=["blogs"])
