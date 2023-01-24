@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, status, Response, HTTPException
+from typing import List
 from . import schemas, models
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
@@ -16,7 +17,7 @@ def get_db():
         db.close()
 
 
-@app.get("/blog")
+@app.get("/blog", status_code=200, response_model=List[schemas.ShowBlog])
 def get_all(db: Session = Depends(get_db)):
     try:
         blogs = db.query(models.Blog).all()
@@ -24,7 +25,7 @@ def get_all(db: Session = Depends(get_db)):
     except:
         raise HTTPException(status_code=500, detail=f'Something go wrong!')
 
-@app.get("/blog/{id}")
+@app.get("/blog/{id}", status_code=200, response_model=schemas.ShowBlog)
 def get_one(id: int, response: Response, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
     if not blog:
