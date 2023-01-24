@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from schemas import schemas
-from models import models
 from utils.database import get_db
 from sqlalchemy.orm import Session
+from repository import blog
 
 router = APIRouter(
     tags=["blogs"],
@@ -15,55 +15,22 @@ router = APIRouter(
 
 @router.get("/", status_code=200, response_model=List[schemas.ShowBlog])
 def get_all(db: Session = Depends(get_db)):
-    try:
-        blogs = db.query(models.Blog).all()
-        return blogs
-    except:
-        raise HTTPException(status_code=500, detail=f'Something go wrong!')
+    return blog.get_all(db)
 
 @router.get("/{id}", status_code=200, response_model=schemas.ShowBlog)
 def get_one(id: int, db: Session = Depends(get_db)):
-    blog = db.query(models.Blog).filter(models.Blog.id == id).first()
-    if not blog:
-        raise HTTPException(status_code=404, detail=f'blog with id: {id} is not avalible')
-
-    return blog
+    return blog.get_one(db, id)
 
 @router.post("/", status_code=201)
 def create(request: schemas.Blog, db: Session = Depends(get_db)):
-    try:
-        new_blog = models.Blog(title= request.title, body=request.body, user_id=1)
-        db.add(new_blog)
-        db.commit()
-        db.refresh(new_blog)
-        return new_blog
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f'Something go wrong!')
+    return blog.create(db, request)
 
 @router.put("/{id}", status_code=202)
 def update(id: int, request: schemas.Blog, db: Session = Depends(get_db)):
-    blog = db.query(models.Blog).filter(models.Blog.id == id)
-    if not blog.first():
-        raise HTTPException(status_code=404, detail=f'Blog with id {id} not found')
-
-    blog.update(request.dict(), synchronize_session=False)
-    db.commit()
-
-    return {
-        "success": True
-    }
+    return blog.update(db, id, request)
 
 
 
 @router.delete("/{id}", status_code=204)
 def delete(id: int, db: Session = Depends(get_db)):
-    blog = db.query(models.Blog).filter(models.Blog.id == id)
-    if not blog.first():
-        raise HTTPException(status_code=404, detail=f'Blog with id {id} not found')
-
-    blog.delete(synchronize_session=False)
-    db.commit()
-
-    return {
-        "success": True
-    }
+    return blog.delete(db, id)
