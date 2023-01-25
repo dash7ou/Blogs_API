@@ -3,3 +3,4 @@ uvicorn
 sqlalchemy
 mysqlclient
 passlib
+python-jose
