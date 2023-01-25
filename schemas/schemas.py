@@ -14,6 +14,7 @@ class Blog(BlogBase):
 
 
 class User(BaseModel):
+    id: int
     name: str
     email: str
     password: str

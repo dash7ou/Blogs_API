@@ -4,3 +4,4 @@ sqlalchemy
 mysqlclient
 passlib
 python-jose
+python-multipart

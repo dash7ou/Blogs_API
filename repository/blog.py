@@ -20,9 +20,9 @@ def get_one(db: Session, id: int):
     return blog
 
 
-def create(db: Session, request: schemas.Blog):
+def create(db: Session, request: schemas.Blog, current_user: schemas.User):
     try:
-        new_blog = models.Blog(title= request.title, body=request.body, user_id=1)
+        new_blog = models.Blog(title= request.title, body=request.body, user_id=current_user.id)
         db.add(new_blog)
         db.commit()
         db.refresh(new_blog)
@@ -31,7 +31,7 @@ def create(db: Session, request: schemas.Blog):
         raise HTTPException(status_code=500, detail=f'Something go wrong!')
 
 
-def update(db: Session, id: int, request: schemas.Blog):
+def update(db: Session, id: int, request: schemas.Blog, current_user: schemas.User):
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
         raise HTTPException(status_code=404, detail=f'Blog with id {id} not found')
@@ -44,7 +44,7 @@ def update(db: Session, id: int, request: schemas.Blog):
     }
 
 
-def delete(db: Session, id: int):
+def delete(db: Session, id: int, current_user: schemas.User):
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
         raise HTTPException(status_code=404, detail=f'Blog with id {id} not found')
