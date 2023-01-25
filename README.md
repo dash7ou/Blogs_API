@@ -30,27 +30,27 @@ Now ur env is ready.
 ```shell
 .
 ├── models
-|   ├── models.py
+│   ├── models.py
 │   └── __init__.py
 ├── repository
 │   ├── auth.py
-|   ├── blog.py
-|   ├── user.py
-|   └── __init__.py
+│   ├── blog.py
+│   ├── user.py
+│   └── __init__.py
 ├── router
 │   ├── auth.py
-|   ├── blog.py
-|   ├── user.py
+│   ├── blog.py
+│   ├── user.py
 │   └── __init__.py
 ├── schemas
-|   ├── schemas.py
-|   └── __init__.py
+│   ├── schemas.py
+│   └── __init__.py
 ├── utils
-|   ├── database.py
-|   ├── hashing.py
-|   ├── oauth2.py
-|   ├── token.py
-|   └── __init__.py
+│   ├── database.py
+│   ├── hashing.py
+│   ├── oauth2.py
+│   ├── token.py
+│   └── __init__.py
 ├── main.py
 ├── README.md
 ├── .gitignore
